@@ -19,17 +19,23 @@ def changenumbers(folder):
 				if page:
 					print "Processing Page" + page.group(1)
 					for line in source:
-						m = re.match(r'<div class="pagenumber">([0-9]*)</div>', line)
+						m = re.search(r'<div class="pagenumber">([0-9]*)</div>', line)
+						nm = re.search(r'<img alt="" src="\.\./Images/page([0-9]*)\.jpg" />', line)
 						if m is not None:
 							#print "Found in page " + page.group(1) + ", text showing " + m.group(1)
 							#newpage = m.sub('',line)
 							line = re.sub(r'<div class="pagenumber">([0-9]*)</div>', '<div class="pagenumber">'+page.group(1)+'</div>', line)
+							print line
+							destination.write(line)
+						elif nm is not None:
+							line = re.sub(r'<img alt="" src="\.\./Images/page([0-9]*)\.jpg" />', '<img alt="" src="../Images/page'+page.group(1)+'.jpg" />', line)
+							print line
 							destination.write(line)
 						else:
 							destination.write(line)
-
 				source.close()
 				destination.close()
+
 
 def restorebaks(folder):
 	for afile in os.listdir(folder):
@@ -37,7 +43,6 @@ def restorebaks(folder):
 			os.remove(afile)
 		elif afile.endswith('.bak'):
 			shutil.move( afile, afile[:-4] )
-
 
 changenumbers(folder)
 #restorebaks(folder)
